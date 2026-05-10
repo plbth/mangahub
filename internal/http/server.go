@@ -2,11 +2,11 @@ package httpapi
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,40 +15,49 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/plbth/mangahub/internal/websocket"
+	"github.com/plbth/mangahub/pkg/database"
 	"github.com/plbth/mangahub/pkg/models"
+	"github.com/plbth/mangahub/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Config groups the inputs needed by the HTTP API.
 type Config struct {
-	DataPath  string
 	JWTSecret string
 }
 
-// Server bundles the router and in-memory storage so the API can run
-// independently from the unfinished database layer.
+// Server bundles the router and dependencies for the HTTP API.
 type Server struct {
-	router    *gin.Engine
-	store     *MemoryStore
-	jwtSecret []byte
+	router     *gin.Engine
+	repo       database.Repository
+	hub        *websocket.ChatHub
+	grpcClient proto.MangaServiceClient
+	jwtSecret  []byte
+	httpServer *http.Server
 }
 
-func NewServer(cfg Config) (*Server, error) {
-	if cfg.DataPath == "" {
-		cfg.DataPath = "data/manga.json"
+func NewServer(cfg Config, repo database.Repository, hub *websocket.ChatHub, grpcConn *grpc.ClientConn) (*Server, error) {
+	if repo == nil {
+		return nil, fmt.Errorf("http: repository is required")
+	}
+	if hub == nil {
+		return nil, fmt.Errorf("http: websocket hub is required")
+	}
+	if grpcConn == nil {
+		return nil, fmt.Errorf("http: grpc connection is required")
 	}
 	if cfg.JWTSecret == "" {
 		cfg.JWTSecret = "mangahub-dev-secret"
 	}
 
-	mangas, err := LoadMangaData(cfg.DataPath)
-	if err != nil {
-		return nil, err
-	}
-
-	store := NewMemoryStore(mangas)
 	s := &Server{
-		store:     store,
-		jwtSecret: []byte(cfg.JWTSecret),
+		repo:       repo,
+		hub:        hub,
+		grpcClient: proto.NewMangaServiceClient(grpcConn),
+		jwtSecret:  []byte(cfg.JWTSecret),
 	}
 	s.router = s.buildRouter()
 	return s, nil
@@ -59,7 +68,18 @@ func (s *Server) Router() *gin.Engine {
 }
 
 func (s *Server) Run(addr string) error {
-	return s.router.Run(addr)
+	s.httpServer = &http.Server{
+		Addr:    addr,
+		Handler: s.router,
+	}
+	return s.httpServer.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	if s.httpServer == nil {
+		return nil
+	}
+	return s.httpServer.Shutdown(ctx)
 }
 
 func (s *Server) buildRouter() *gin.Engine {
@@ -75,6 +95,8 @@ func (s *Server) buildRouter() *gin.Engine {
 			"timestamp": time.Now().UTC(),
 		})
 	})
+
+	r.GET("/ws", s.authMiddleware(), s.handleWebSocket)
 
 	auth := r.Group("/auth")
 	{
@@ -135,26 +157,24 @@ func (s *Server) handleRegister(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashed, err := hashPassword(req.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
 
 	user := &models.User{
-		ID:           newID("usr"),
 		Username:     req.Username,
 		Email:        req.Email,
-		PasswordHash: string(hashedPassword),
-		CreatedAt:    time.Now().UTC(),
+		PasswordHash: hashed,
 	}
 
-	if err := s.store.CreateUser(user); err != nil {
-		status := http.StatusBadRequest
-		if errors.Is(err, ErrDuplicateUser) {
-			status = http.StatusConflict
+	if err := s.repo.CreateUser(user); err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "already exists") {
+			c.JSON(http.StatusConflict, gin.H{"error": "username or email already exists"})
+			return
 		}
-		c.JSON(status, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 		return
 	}
 
@@ -177,22 +197,18 @@ func (s *Server) handleLogin(c *gin.Context) {
 		return
 	}
 
-	var user *models.User
-	var err error
-	if req.Username != "" {
-		user, err = s.store.GetUserByUsername(req.Username)
-	} else if req.Email != "" {
-		user, err = s.store.GetUserByEmail(req.Email)
-	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username or email is required"})
+	if req.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
 		return
 	}
+
+	user, err := s.repo.GetUserByUsername(req.Username)
 	if err != nil {
-		if errors.Is(err, ErrNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "account not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
 		return
 	}
 
@@ -216,7 +232,7 @@ func (s *Server) handleLogin(c *gin.Context) {
 func (s *Server) handleListManga(c *gin.Context) {
 	query := strings.TrimSpace(c.Query("query"))
 	genre := strings.TrimSpace(c.Query("genre"))
-	status := strings.TrimSpace(c.Query("status"))
+	statusFilter := strings.TrimSpace(c.Query("status"))
 
 	limit := 0
 	if raw := c.Query("limit"); raw != "" {
@@ -232,7 +248,25 @@ func (s *Server) handleListManga(c *gin.Context) {
 		}
 	}
 
-	results := s.store.SearchManga(query, genre, status)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	results, err := s.searchManga(ctx, query, genre)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to search manga"})
+		return
+	}
+
+	if statusFilter != "" {
+		filtered := make([]models.Manga, 0, len(results))
+		for _, item := range results {
+			if strings.EqualFold(item.Status, statusFilter) {
+				filtered = append(filtered, item)
+			}
+		}
+		results = filtered
+	}
+
 	if limit > 0 {
 		start := (page - 1) * limit
 		if start >= len(results) {
@@ -251,27 +285,36 @@ func (s *Server) handleListManga(c *gin.Context) {
 		"manga":  results,
 		"query":  query,
 		"genre":  genre,
-		"status": status,
+		"status": statusFilter,
 	})
 }
 
 func (s *Server) handleGetManga(c *gin.Context) {
-	manga, err := s.store.GetManga(c.Param("id"))
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	resp, err := s.grpcClient.GetManga(ctx, &proto.GetMangaRequest{Id: c.Param("id")})
 	if err != nil {
-		if errors.Is(err, ErrNotFound) {
+		if status.Code(err) == codes.NotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch manga"})
 		return
 	}
 
-	c.JSON(http.StatusOK, manga)
+	c.JSON(http.StatusOK, mangaFromProto(resp))
 }
 
 func (s *Server) handleAddToLibrary(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	username, _ := c.Get("username")
+
+	userIDStr, ok := userID.(string)
+	if !ok || userIDStr == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		return
+	}
 
 	var req AddLibraryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -279,18 +322,18 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 		return
 	}
 
-	manga, err := s.store.GetManga(req.MangaID)
+	manga, err := s.repo.GetManga(req.MangaID)
 	if err != nil {
-		if errors.Is(err, ErrNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
 		return
 	}
 
 	progress := models.UserProgress{
-		UserID:         userID.(string),
+		UserID:         userIDStr,
 		MangaID:        manga.ID,
 		CurrentChapter: req.CurrentChapter,
 		Volume:         req.Volume,
@@ -300,14 +343,19 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 		UpdatedAt:      time.Now().UTC(),
 	}
 
-	if err := s.store.UpsertProgress(progress); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := s.repo.UpdateProgress(&progress); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update library"})
 		return
+	}
+
+	usernameStr, _ := username.(string)
+	if usernameStr == "" {
+		usernameStr = userIDStr
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message":  "added to library",
-		"user":     username,
+		"user":     usernameStr,
 		"manga":    manga.Title,
 		"progress": progress,
 	})
@@ -315,13 +363,24 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 
 func (s *Server) handleGetLibrary(c *gin.Context) {
 	userID, _ := c.Get("userID")
-	status := strings.TrimSpace(c.Query("status"))
+	userIDStr, ok := userID.(string)
+	if !ok || userIDStr == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		return
+	}
 
-	library := s.store.GetUserLibrary(userID.(string))
-	if status != "" {
+	statusFilter := strings.TrimSpace(c.Query("status"))
+
+	library, err := s.repo.GetUserLibrary(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch library"})
+		return
+	}
+
+	if statusFilter != "" {
 		filtered := make([]models.LibraryView, 0, len(library))
 		for _, item := range library {
-			if strings.EqualFold(item.Progress.Status, status) {
+			if strings.EqualFold(item.Progress.Status, statusFilter) {
 				filtered = append(filtered, item)
 			}
 		}
@@ -336,6 +395,11 @@ func (s *Server) handleGetLibrary(c *gin.Context) {
 
 func (s *Server) handleUpdateProgress(c *gin.Context) {
 	userID, _ := c.Get("userID")
+	userIDStr, ok := userID.(string)
+	if !ok || userIDStr == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		return
+	}
 
 	var req UpdateProgressRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -343,13 +407,13 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 		return
 	}
 
-	manga, err := s.store.GetManga(req.MangaID)
+	manga, err := s.repo.GetManga(req.MangaID)
 	if err != nil {
-		if errors.Is(err, ErrNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
 		return
 	}
 
@@ -360,16 +424,8 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 		return
 	}
 
-	existing, ok := s.store.GetProgress(userID.(string), manga.ID)
-	if ok && req.Chapter < existing.CurrentChapter {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": fmt.Sprintf("chapter %d is behind your current progress (chapter %d)", req.Chapter, existing.CurrentChapter),
-		})
-		return
-	}
-
 	progress := models.UserProgress{
-		UserID:         userID.(string),
+		UserID:         userIDStr,
 		MangaID:        manga.ID,
 		CurrentChapter: req.Chapter,
 		Volume:         req.Volume,
@@ -379,8 +435,8 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 		UpdatedAt:      time.Now().UTC(),
 	}
 
-	if err := s.store.UpsertProgress(progress); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := s.repo.UpdateProgress(&progress); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update progress"})
 		return
 	}
 
@@ -389,6 +445,79 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 		"manga":    manga.Title,
 		"progress": progress,
 	})
+}
+
+func (s *Server) handleWebSocket(c *gin.Context) {
+	websocket.ServeWS(c.Writer, c.Request, s.hub)
+}
+
+func (s *Server) searchManga(ctx context.Context, query, genre string) ([]models.Manga, error) {
+	grpcGenre := normalizeGenreFilter(genre)
+	resp, err := s.grpcClient.SearchManga(ctx, &proto.SearchRequest{Query: query, Genre: grpcGenre})
+	if err != nil {
+		if status.Code(err) == codes.NotFound {
+			return []models.Manga{}, nil
+		}
+		return nil, err
+	}
+
+	results := make([]models.Manga, 0, len(resp.Results))
+	for _, item := range resp.Results {
+		results = append(results, mangaFromProto(item))
+	}
+	return results, nil
+}
+
+func normalizeGenreFilter(genre string) string {
+	trimmed := strings.TrimSpace(genre)
+	if trimmed == "" {
+		return ""
+	}
+	if strings.HasPrefix(trimmed, "[") {
+		return trimmed
+	}
+
+	parts := strings.Split(trimmed, ",")
+	genres := make([]string, 0, len(parts))
+	for _, part := range parts {
+		value := strings.TrimSpace(part)
+		if value != "" {
+			genres = append(genres, value)
+		}
+	}
+	if len(genres) == 0 {
+		return ""
+	}
+
+	payload, err := json.Marshal(genres)
+	if err != nil {
+		return ""
+	}
+	return string(payload)
+}
+
+func hashPassword(password string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return "", err
+	}
+	return string(hashed), nil
+}
+
+func mangaFromProto(resp *proto.MangaResponse) models.Manga {
+	if resp == nil {
+		return models.Manga{}
+	}
+	return models.Manga{
+		ID:            resp.Id,
+		Title:         resp.Title,
+		Author:        resp.Author,
+		Genres:        resp.Genres,
+		Status:        resp.Status,
+		TotalChapters: int(resp.TotalChapters),
+		Description:   resp.Description,
+		CoverURL:      resp.CoverUrl,
+	}
 }
 
 func (s *Server) generateToken(userID, username string) (string, error) {
@@ -469,18 +598,4 @@ func corsMiddleware() gin.HandlerFunc {
 		}
 		c.Next()
 	}
-}
-
-// LoadMangaData reads the JSON seed file from data/manga.json.
-func LoadMangaData(path string) ([]models.Manga, error) {
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read manga data: %w", err)
-	}
-
-	var mangas []models.Manga
-	if err := json.Unmarshal(raw, &mangas); err != nil {
-		return nil, fmt.Errorf("parse manga data: %w", err)
-	}
-	return mangas, nil
 }
