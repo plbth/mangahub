@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -11,10 +13,13 @@ import (
 	"time"
 
 	grpcserver "github.com/plbth/mangahub/internal/grpc"
+	httpapi "github.com/plbth/mangahub/internal/http"
 	"github.com/plbth/mangahub/internal/tcp"
+	"github.com/plbth/mangahub/internal/udp"
 	"github.com/plbth/mangahub/internal/websocket"
 	"github.com/plbth/mangahub/pkg/database"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -53,7 +58,7 @@ func main() {
     // Start TCP server.
     tcpServer := tcp.NewTCPServer(9090)
     tcpStarted := make(chan struct{}, 1)
-    startErrors := make(chan error, 2)
+    startErrors := make(chan error, 4)
 
     wg.Add(1)
     go func() {
@@ -93,14 +98,53 @@ func main() {
         <-ctx.Done()
     }()
 
+    // Create gRPC client connection for HTTP server.
+    grpcConn, err := gogrpc.Dial("127.0.0.1:9092", gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+    if err != nil {
+        log.Fatalf("[ORCHESTRATOR] Failed to connect to gRPC server: %v", err)
+    }
+
+    // Start HTTP server.
+    httpServer, err := httpapi.NewServer(httpapi.Config{JWTSecret: "mangahub-dev-secret"}, repo, hub, grpcConn)
+    if err != nil {
+        log.Fatalf("[ORCHESTRATOR] Failed to create HTTP server: %v", err)
+    }
+    httpStarted := make(chan struct{}, 1)
+
+    wg.Add(1)
+    go func() {
+        defer wg.Done()
+        log.Println("[ORCHESTRATOR] Starting HTTP API server on :8080")
+        httpStarted <- struct{}{}
+        if err := httpServer.Run(":8080"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+            startErrors <- fmt.Errorf("http start failed: %w", err)
+        }
+    }()
+
+    // Start UDP server.
+    udpServer := udp.NewServer(":9091")
+    udpStarted := make(chan struct{}, 1)
+
+    wg.Add(1)
+    go func() {
+        defer wg.Done()
+        log.Println("[ORCHESTRATOR] Starting UDP server on :9091")
+        udpStarted <- struct{}{}
+        if err := udpServer.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
+            startErrors <- fmt.Errorf("udp start failed: %w", err)
+        }
+    }()
+
     // Track gRPC server instance for shutdown.
     var grpcSrv *gogrpc.Server
 
-    // Wait for TCP and gRPC to start (or fail).
+    // Wait for TCP, gRPC, HTTP, and UDP to start (or fail).
     startedTCP := false
     startedGRPC := false
+    startedHTTP := false
+    startedUDP := false
     startupTimer := time.NewTimer(10 * time.Second)
-    for !(startedTCP && startedGRPC) {
+    for !(startedTCP && startedGRPC && startedHTTP && startedUDP) {
         select {
         case err := <-startErrors:
             log.Fatalf("[ORCHESTRATOR] Startup error: %v", err)
@@ -109,14 +153,15 @@ func main() {
         case srv := <-grpcStarted:
             grpcSrv = srv
             startedGRPC = true
+        case <-httpStarted:
+            startedHTTP = true
+        case <-udpStarted:
+            startedUDP = true
         case <-startupTimer.C:
             log.Fatal("[ORCHESTRATOR] Startup timeout waiting for servers to signal readiness")
         }
     }
     startupTimer.Stop()
-
-    log.Println("[ORCHESTRATOR] HTTP API server pending (Person B) on :8080")
-    log.Println("[ORCHESTRATOR] UDP notification server pending (Person B) on :9091")
     log.Println("[ORCHESTRATOR] All servers started successfully")
 
     // Block until shutdown signal.
@@ -156,6 +201,30 @@ func main() {
         }
     }()
 
+    shutdownWg.Add(1)
+    go func() {
+        defer shutdownWg.Done()
+        log.Println("[ORCHESTRATOR] Shutting down HTTP API server...")
+        if err := httpServer.Shutdown(shutdownCtx); err != nil {
+            shutdownMu.Lock()
+            shutdownErrors = true
+            shutdownMu.Unlock()
+            log.Printf("[ORCHESTRATOR] HTTP shutdown error: %v", err)
+        }
+    }()
+
+    shutdownWg.Add(1)
+    go func() {
+        defer shutdownWg.Done()
+        log.Println("[ORCHESTRATOR] Shutting down UDP server...")
+        if err := udpServer.Close(); err != nil {
+            shutdownMu.Lock()
+            shutdownErrors = true
+            shutdownMu.Unlock()
+            log.Printf("[ORCHESTRATOR] UDP shutdown error: %v", err)
+        }
+    }()
+
     log.Println("[ORCHESTRATOR] Shutting down WebSocket hub...")
     hub.Close()
 
@@ -180,6 +249,10 @@ func main() {
     shutdownMu.Lock()
     hadShutdownErrors := shutdownErrors
     shutdownMu.Unlock()
+
+    if closeErr := grpcConn.Close(); closeErr != nil {
+        log.Printf("[ORCHESTRATOR] gRPC connection close error: %v", closeErr)
+    }
 
     if hadShutdownErrors {
         log.Println("[ORCHESTRATOR] Some servers did not shut down gracefully")

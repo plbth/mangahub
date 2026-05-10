@@ -72,12 +72,22 @@ type Client struct {
 // In a real deployment the JWT middleware stores userID/username in the
 // request context; read from r.Context() before falling back to query params.
 func ServeWS(w http.ResponseWriter, r *http.Request, hub *ChatHub) {
-	// Pull identity from query string.
-	// TODO: swap for ctx.Value(auth.UserIDKey) once JWT middleware is wired in.
-	q := r.URL.Query()
-	userID := q.Get("user_id")
-	username := q.Get("username")
-	mangaID := q.Get("manga_id") // empty string → general chat
+	ctx := r.Context()
+	userID, _ := ctx.Value("userID").(string)
+	username, _ := ctx.Value("username").(string)
+
+	// Fallback to query string if auth context is unavailable.
+	if userID == "" || username == "" {
+		q := r.URL.Query()
+		if userID == "" {
+			userID = q.Get("user_id")
+		}
+		if username == "" {
+			username = q.Get("username")
+		}
+	}
+
+	mangaID := r.URL.Query().Get("manga_id") // empty string → general chat
 
 	if userID == "" || username == "" {
 		http.Error(w, "user_id and username are required", http.StatusBadRequest)
