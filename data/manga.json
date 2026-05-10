@@ -1,0 +1,1442 @@
+[
+  {
+    "id": "one-piece",
+    "title": "One Piece",
+    "author": "Oda Eiichiro",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Comedy",
+      "Drama",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 1100,
+    "description": "Monkey D. Luffy sails the Grand Line with his crew in search of the legendary One Piece.",
+    "cover_url": "https://example.com/covers/one-piece.jpg"
+  },
+  {
+    "id": "naruto",
+    "title": "Naruto",
+    "author": "Masashi Kishimoto",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 700,
+    "description": "A young ninja seeks recognition and dreams of becoming Hokage.",
+    "cover_url": "https://example.com/covers/naruto.jpg"
+  },
+  {
+    "id": "bleach",
+    "title": "Bleach",
+    "author": "Tite Kubo",
+    "genres": [
+      "Action",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 686,
+    "description": "Ichigo Kurosaki becomes a Soul Reaper and battles hollows and other spiritual threats.",
+    "cover_url": "https://example.com/covers/bleach.jpg"
+  },
+  {
+    "id": "dragon-ball",
+    "title": "Dragon Ball",
+    "author": "Akira Toriyama",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Comedy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 519,
+    "description": "Goku's adventures begin as he searches for the Dragon Balls and grows into a world-class fighter.",
+    "cover_url": "https://example.com/covers/dragon-ball.jpg"
+  },
+  {
+    "id": "dragon-ball-z",
+    "title": "Dragon Ball Z",
+    "author": "Akira Toriyama",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 325,
+    "description": "The Z Fighters protect Earth from powerful threats across the universe.",
+    "cover_url": "https://example.com/covers/dragon-ball-z.jpg"
+  },
+  {
+    "id": "dragon-ball-super",
+    "title": "Dragon Ball Super",
+    "author": "Akira Toriyama",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 100,
+    "description": "Goku and his allies face new divine and multiversal threats.",
+    "cover_url": "https://example.com/covers/dragon-ball-super.jpg"
+  },
+  {
+    "id": "hunter-x-hunter",
+    "title": "Hunter x Hunter",
+    "author": "Yoshihiro Togashi",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 400,
+    "description": "Gon Freecss becomes a Hunter and searches for his father while facing deadly trials.",
+    "cover_url": "https://example.com/covers/hunter-x-hunter.jpg"
+  },
+  {
+    "id": "fullmetal-alchemist",
+    "title": "Fullmetal Alchemist",
+    "author": "Hiromu Arakawa",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Drama",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 116,
+    "description": "Two brothers use alchemy in a desperate quest to restore what they lost.",
+    "cover_url": "https://example.com/covers/fullmetal-alchemist.jpg"
+  },
+  {
+    "id": "death-note",
+    "title": "Death Note",
+    "author": "Tsugumi Ohba",
+    "genres": [
+      "Mystery",
+      "Psychological",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 108,
+    "description": "A student gains a notebook that can kill anyone whose name is written in it.",
+    "cover_url": "https://example.com/covers/death-note.jpg"
+  },
+  {
+    "id": "my-hero-academia",
+    "title": "My Hero Academia",
+    "author": "Kohei Horikoshi",
+    "genres": [
+      "Action",
+      "Superhero",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 430,
+    "description": "In a world of heroes, an underdog trains to become the greatest of them all.",
+    "cover_url": "https://example.com/covers/my-hero-academia.jpg"
+  },
+  {
+    "id": "jujutsu-kaisen",
+    "title": "Jujutsu Kaisen",
+    "author": "Gege Akutami",
+    "genres": [
+      "Action",
+      "Dark Fantasy",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 270,
+    "description": "A student joins the jujutsu world to fight cursed spirits.",
+    "cover_url": "https://example.com/covers/jujutsu-kaisen.jpg"
+  },
+  {
+    "id": "demon-slayer",
+    "title": "Demon Slayer",
+    "author": "Koyoharu Gotouge",
+    "genres": [
+      "Action",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 205,
+    "description": "Tanjiro hunts demons to save his sister and avenge his family.",
+    "cover_url": "https://example.com/covers/demon-slayer.jpg"
+  },
+  {
+    "id": "chainsaw-man",
+    "title": "Chainsaw Man",
+    "author": "Tatsuki Fujimoto",
+    "genres": [
+      "Action",
+      "Dark Fantasy",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 170,
+    "description": "A devil hunter merges with a chainsaw devil and enters a brutal new life.",
+    "cover_url": "https://example.com/covers/chainsaw-man.jpg"
+  },
+  {
+    "id": "black-clover",
+    "title": "Black Clover",
+    "author": "Yuki Tabata",
+    "genres": [
+      "Action",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 380,
+    "description": "Asta fights to become the Wizard King despite lacking magic.",
+    "cover_url": "https://example.com/covers/black-clover.jpg"
+  },
+  {
+    "id": "one-punch-man",
+    "title": "One-Punch Man",
+    "author": "ONE",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Superhero",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 205,
+    "description": "Saitama can defeat any enemy with a single punch and is bored by the lack of challenge.",
+    "cover_url": "https://example.com/covers/one-punch-man.jpg"
+  },
+  {
+    "id": "tokyo-ghoul",
+    "title": "Tokyo Ghoul",
+    "author": "Sui Ishida",
+    "genres": [
+      "Action",
+      "Horror",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 143,
+    "description": "A college student becomes a half-ghoul and is forced into a dark hidden world.",
+    "cover_url": "https://example.com/covers/tokyo-ghoul.jpg"
+  },
+  {
+    "id": "attack-on-titan",
+    "title": "Attack on Titan",
+    "author": "Hajime Isayama",
+    "genres": [
+      "Action",
+      "Drama",
+      "Mystery",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 139,
+    "description": "Humanity fights for survival behind massive walls against terrifying titans.",
+    "cover_url": "https://example.com/covers/attack-on-titan.jpg"
+  },
+  {
+    "id": "fairy-tail",
+    "title": "Fairy Tail",
+    "author": "Hiro Mashima",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 545,
+    "description": "A wizard guild's members take on magical adventures together.",
+    "cover_url": "https://example.com/covers/fairy-tail.jpg"
+  },
+  {
+    "id": "blue-lock",
+    "title": "Blue Lock",
+    "author": "Muneyuki Kaneshiro",
+    "genres": [
+      "Sports",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 290,
+    "description": "A brutal soccer program seeks to create the best striker in Japan.",
+    "cover_url": "https://example.com/covers/blue-lock.jpg"
+  },
+  {
+    "id": "haikyuu",
+    "title": "Haikyuu!!",
+    "author": "Haruichi Furudate",
+    "genres": [
+      "Sports",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 402,
+    "description": "High school volleyball rivalry and teamwork drive the story forward.",
+    "cover_url": "https://example.com/covers/haikyuu.jpg"
+  },
+  {
+    "id": "kuroko-no-basket",
+    "title": "Kuroko's Basketball",
+    "author": "Tadatoshi Fujimaki",
+    "genres": [
+      "Sports",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 275,
+    "description": "A hidden playmaker helps his team challenge elite basketball talent.",
+    "cover_url": "https://example.com/covers/kuroko-no-basket.jpg"
+  },
+  {
+    "id": "slam-dunk",
+    "title": "Slam Dunk",
+    "author": "Takehiko Inoue",
+    "genres": [
+      "Sports",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 276,
+    "description": "A delinquent joins a basketball team and changes through the sport.",
+    "cover_url": "https://example.com/covers/slam-dunk.jpg"
+  },
+  {
+    "id": "yu-gi-oh",
+    "title": "Yu-Gi-Oh!",
+    "author": "Kazuki Takahashi",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 343,
+    "description": "Duel monsters, ancient puzzles, and high-stakes games collide.",
+    "cover_url": "https://example.com/covers/yu-gi-oh.jpg"
+  },
+  {
+    "id": "jojos-bizarre-adventure",
+    "title": "JoJo's Bizarre Adventure",
+    "author": "Hirohiko Araki",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 1000,
+    "description": "The Joestar lineage battles supernatural threats across generations.",
+    "cover_url": "https://example.com/covers/jojos-bizarre-adventure.jpg"
+  },
+  {
+    "id": "neon-genesis-evangelion",
+    "title": "Neon Genesis Evangelion",
+    "author": "Yoshiyuki Sadamoto",
+    "genres": [
+      "Action",
+      "Drama",
+      "Mecha",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 96,
+    "description": "Teen pilots defend humanity in a psychological mecha saga.",
+    "cover_url": "https://example.com/covers/neon-genesis-evangelion.jpg"
+  },
+  {
+    "id": "vinland-saga",
+    "title": "Vinland Saga",
+    "author": "Makoto Yukimura",
+    "genres": [
+      "Action",
+      "Drama",
+      "Historical",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 220,
+    "description": "A Viking-era tale of revenge, war, and the search for a peaceful land.",
+    "cover_url": "https://example.com/covers/vinland-saga.jpg"
+  },
+  {
+    "id": "berserk",
+    "title": "Berserk",
+    "author": "Kentaro Miura",
+    "genres": [
+      "Action",
+      "Dark Fantasy",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 380,
+    "description": "A lone swordsman struggles through a brutal dark fantasy world.",
+    "cover_url": "https://example.com/covers/berserk.jpg"
+  },
+  {
+    "id": "kingdom",
+    "title": "Kingdom",
+    "author": "Yasuhisa Hara",
+    "genres": [
+      "Action",
+      "Historical",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 800,
+    "description": "A war epic following a slave boy who dreams of becoming a great general.",
+    "cover_url": "https://example.com/covers/kingdom.jpg"
+  },
+  {
+    "id": "monster",
+    "title": "Monster",
+    "author": "Naoki Urasawa",
+    "genres": [
+      "Mystery",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 162,
+    "description": "A doctor hunts a dangerous former patient linked to a string of murders.",
+    "cover_url": "https://example.com/covers/monster.jpg"
+  },
+  {
+    "id": "vagabond",
+    "title": "Vagabond",
+    "author": "Takehiko Inoue",
+    "genres": [
+      "Action",
+      "Historical",
+      "Seinen"
+    ],
+    "status": "hiatus",
+    "total_chapters": 327,
+    "description": "A legendary swordsman seeks meaning, strength, and enlightenment.",
+    "cover_url": "https://example.com/covers/vagabond.jpg"
+  },
+  {
+    "id": "20th-century-boys",
+    "title": "20th Century Boys",
+    "author": "Naoki Urasawa",
+    "genres": [
+      "Mystery",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 249,
+    "description": "Childhood memories and a cult-like conspiracy collide in a sprawling mystery.",
+    "cover_url": "https://example.com/covers/20th-century-boys.jpg"
+  },
+  {
+    "id": "pluto",
+    "title": "Pluto",
+    "author": "Naoki Urasawa",
+    "genres": [
+      "Mystery",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 65,
+    "description": "A detective investigates murders tied to a new wave of advanced robots.",
+    "cover_url": "https://example.com/covers/pluto.jpg"
+  },
+  {
+    "id": "dorohedoro",
+    "title": "Dorohedoro",
+    "author": "Q Hayashida",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Dark Fantasy",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 167,
+    "description": "A lizard-headed amnesiac searches for the sorcerer who cursed him.",
+    "cover_url": "https://example.com/covers/dorohedoro.jpg"
+  },
+  {
+    "id": "golden-kamuy",
+    "title": "Golden Kamuy",
+    "author": "Satoru Noda",
+    "genres": [
+      "Adventure",
+      "Historical",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 314,
+    "description": "A treasure hunt unfolds in Hokkaido with soldiers, outlaws, and survival drama.",
+    "cover_url": "https://example.com/covers/golden-kamuy.jpg"
+  },
+  {
+    "id": "kaiju-no-8",
+    "title": "Kaiju No. 8",
+    "author": "Naoya Matsumoto",
+    "genres": [
+      "Action",
+      "Sci-Fi",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 120,
+    "description": "A cleanup worker gains kaiju powers and joins the fight against monsters.",
+    "cover_url": "https://example.com/covers/kaiju-no-8.jpg"
+  },
+  {
+    "id": "spy-x-family",
+    "title": "Spy x Family",
+    "author": "Tatsuya Endo",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Slice of Life",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 110,
+    "description": "A spy forms a fake family while hiding dangerous secrets from everyone.",
+    "cover_url": "https://example.com/covers/spy-x-family.jpg"
+  },
+  {
+    "id": "fire-force",
+    "title": "Fire Force",
+    "author": "Atsushi Ohkubo",
+    "genres": [
+      "Action",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 304,
+    "description": "Fire soldiers battle spontaneous human combustion and hidden conspiracies.",
+    "cover_url": "https://example.com/covers/fire-force.jpg"
+  },
+  {
+    "id": "dr-stone",
+    "title": "Dr. Stone",
+    "author": "Riichiro Inagaki",
+    "genres": [
+      "Adventure",
+      "Sci-Fi",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 232,
+    "description": "A genius rebuilds civilization from stone age technology after humanity is petrified.",
+    "cover_url": "https://example.com/covers/dr-stone.jpg"
+  },
+  {
+    "id": "assassination-classroom",
+    "title": "Assassination Classroom",
+    "author": "Yusei Matsui",
+    "genres": [
+      "Action",
+      "Comedy",
+      "School",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 187,
+    "description": "Students are tasked with assassinating their alien teacher before graduation.",
+    "cover_url": "https://example.com/covers/assassination-classroom.jpg"
+  },
+  {
+    "id": "gintama",
+    "title": "Gintama",
+    "author": "Hideaki Sorachi",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Sci-Fi",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 704,
+    "description": "A samurai comedy set in a bizarre alternate-Edo world.",
+    "cover_url": "https://example.com/covers/gintama.jpg"
+  },
+  {
+    "id": "re-zero-manga",
+    "title": "Re:ZERO -Starting Life in Another World-",
+    "author": "Tappei Nagatsuki",
+    "genres": [
+      "Drama",
+      "Fantasy",
+      "Isekai",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 60,
+    "description": "Subaru is trapped in a world where death can send him back in time.",
+    "cover_url": "https://example.com/covers/re-zero.jpg"
+  },
+  {
+    "id": "magi",
+    "title": "Magi",
+    "author": "Shinobu Ohtaka",
+    "genres": [
+      "Adventure",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 369,
+    "description": "Dungeon adventures, political intrigue, and magical destinies intertwine.",
+    "cover_url": "https://example.com/covers/magi.jpg"
+  },
+  {
+    "id": "seven-deadly-sins",
+    "title": "The Seven Deadly Sins",
+    "author": "Nakaba Suzuki",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 346,
+    "description": "A princess recruits legendary knights to save the kingdom.",
+    "cover_url": "https://example.com/covers/seven-deadly-sins.jpg"
+  },
+  {
+    "id": "blue-exorcist",
+    "title": "Blue Exorcist",
+    "author": "Kazue Kato",
+    "genres": [
+      "Action",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 150,
+    "description": "A boy discovers he is the son of Satan and trains as an exorcist.",
+    "cover_url": "https://example.com/covers/blue-exorcist.jpg"
+  },
+  {
+    "id": "seraph-of-the-end",
+    "title": "Seraph of the End",
+    "author": "Takaya Kagami",
+    "genres": [
+      "Action",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 120,
+    "description": "Humanity and vampires clash in a post-apocalyptic world.",
+    "cover_url": "https://example.com/covers/seraph-of-the-end.jpg"
+  },
+  {
+    "id": "noragami",
+    "title": "Noragami",
+    "author": "Adachitoka",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 109,
+    "description": "A forgotten god tries to build a following and solve spirit problems.",
+    "cover_url": "https://example.com/covers/noragami.jpg"
+  },
+  {
+    "id": "inuyasha",
+    "title": "Inuyasha",
+    "author": "Rumiko Takahashi",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Romance",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 559,
+    "description": "A girl time-travels into the Sengoku era and meets a half-demon.",
+    "cover_url": "https://example.com/covers/inuyasha.jpg"
+  },
+  {
+    "id": "ranma-half",
+    "title": "Ranma 1/2",
+    "author": "Rumiko Takahashi",
+    "genres": [
+      "Comedy",
+      "Martial Arts",
+      "Romance",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 366,
+    "description": "A cursed martial artist changes gender when splashed with cold water.",
+    "cover_url": "https://example.com/covers/ranma-half.jpg"
+  },
+  {
+    "id": "yuyuhakusho",
+    "title": "Yu Yu Hakusho",
+    "author": "Yoshihiro Togashi",
+    "genres": [
+      "Action",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 175,
+    "description": "A delinquent becomes a spirit detective in the afterlife's service.",
+    "cover_url": "https://example.com/covers/yuyuhakusho.jpg"
+  },
+  {
+    "id": "bakuman",
+    "title": "Bakuman",
+    "author": "Tsugumi Ohba",
+    "genres": [
+      "Comedy",
+      "Drama",
+      "Romance",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 176,
+    "description": "Two students chase their dream of becoming successful manga creators.",
+    "cover_url": "https://example.com/covers/bakuman.jpg"
+  },
+  {
+    "id": "the-promised-neverland",
+    "title": "The Promised Neverland",
+    "author": "Kaiu Shirai",
+    "genres": [
+      "Drama",
+      "Horror",
+      "Mystery",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 181,
+    "description": "Children uncover the terrifying truth behind their orphanage.",
+    "cover_url": "https://example.com/covers/the-promised-neverland.jpg"
+  },
+  {
+    "id": "hells-paradise",
+    "title": "Hell's Paradise",
+    "author": "Yuji Kaku",
+    "genres": [
+      "Action",
+      "Dark Fantasy",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 127,
+    "description": "Criminals search a deadly island for the elixir of immortality.",
+    "cover_url": "https://example.com/covers/hells-paradise.jpg"
+  },
+  {
+    "id": "soul-eater",
+    "title": "Soul Eater",
+    "author": "Atsushi Ohkubo",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 113,
+    "description": "Meisters and weapons fight witches and evil souls.",
+    "cover_url": "https://example.com/covers/soul-eater.jpg"
+  },
+  {
+    "id": "gundam-the-origin",
+    "title": "Mobile Suit Gundam: The Origin",
+    "author": "Yoshikazu Yasuhiko",
+    "genres": [
+      "Action",
+      "Mecha",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 24,
+    "description": "A reimagining of the original Gundam story and Char's early life.",
+    "cover_url": "https://example.com/covers/gundam-the-origin.jpg"
+  },
+  {
+    "id": "akira",
+    "title": "Akira",
+    "author": "Katsuhiro Otomo",
+    "genres": [
+      "Action",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 120,
+    "description": "A biker gang and psychic powers collide in a post-apocalyptic city.",
+    "cover_url": "https://example.com/covers/akira.jpg"
+  },
+  {
+    "id": "ghost-in-the-shell",
+    "title": "Ghost in the Shell",
+    "author": "Masamune Shirow",
+    "genres": [
+      "Action",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 11,
+    "description": "Cybernetic police work in a future where identity and technology blur.",
+    "cover_url": "https://example.com/covers/ghost-in-the-shell.jpg"
+  },
+  {
+    "id": "terra-formars",
+    "title": "Terra Formars",
+    "author": "Yu Sasuga",
+    "genres": [
+      "Action",
+      "Horror",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 210,
+    "description": "Humanity battles evolved martian lifeforms during a high-risk mission.",
+    "cover_url": "https://example.com/covers/terra-formars.jpg"
+  },
+  {
+    "id": "parasyte",
+    "title": "Parasyte",
+    "author": "Hitoshi Iwaaki",
+    "genres": [
+      "Action",
+      "Horror",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 64,
+    "description": "A teen shares his body with an alien parasite and fights for survival.",
+    "cover_url": "https://example.com/covers/parasyte.jpg"
+  },
+  {
+    "id": "land-of-the-lustrous",
+    "title": "Land of the Lustrous",
+    "author": "Haruko Ichikawa",
+    "genres": [
+      "Drama",
+      "Fantasy",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 100,
+    "description": "Gems in a distant future battle mysterious lunar beings.",
+    "cover_url": "https://example.com/covers/land-of-the-lustrous.jpg"
+  },
+  {
+    "id": "made-in-abyss",
+    "title": "Made in Abyss",
+    "author": "Akihito Tsukushi",
+    "genres": [
+      "Adventure",
+      "Drama",
+      "Fantasy",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 70,
+    "description": "A young explorer descends into a dangerous abyss filled with wonders and horrors.",
+    "cover_url": "https://example.com/covers/made-in-abyss.jpg"
+  },
+  {
+    "id": "shadows-house",
+    "title": "Shadows House",
+    "author": "Somato",
+    "genres": [
+      "Mystery",
+      "Supernatural",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 170,
+    "description": "Living dolls serve mysterious shadow nobles inside a strange manor.",
+    "cover_url": "https://example.com/covers/shadows-house.jpg"
+  },
+  {
+    "id": "erased",
+    "title": "Erased",
+    "author": "Kei Sanbe",
+    "genres": [
+      "Mystery",
+      "Supernatural",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 44,
+    "description": "A man is sent back in time to prevent a childhood tragedy.",
+    "cover_url": "https://example.com/covers/erased.jpg"
+  },
+  {
+    "id": "thermae-romae",
+    "title": "Thermae Romae",
+    "author": "Mari Yamazaki",
+    "genres": [
+      "Comedy",
+      "Historical",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 21,
+    "description": "An ancient Roman bath architect time-slips to modern Japan for inspiration.",
+    "cover_url": "https://example.com/covers/thermae-romae.jpg"
+  },
+  {
+    "id": "blue-period",
+    "title": "Blue Period",
+    "author": "Tsubasa Yamaguchi",
+    "genres": [
+      "Drama",
+      "School",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 70,
+    "description": "A student discovers a passion for art and pursues a creative future.",
+    "cover_url": "https://example.com/covers/blue-period.jpg"
+  },
+  {
+    "id": "uzumaki",
+    "title": "Uzumaki",
+    "author": "Junji Ito",
+    "genres": [
+      "Horror",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 20,
+    "description": "A town becomes obsessed by spiraling horror.",
+    "cover_url": "https://example.com/covers/uzumaki.jpg"
+  },
+  {
+    "id": "tomie",
+    "title": "Tomie",
+    "author": "Junji Ito",
+    "genres": [
+      "Horror",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 25,
+    "description": "An immortal girl unleashes obsession and madness wherever she appears.",
+    "cover_url": "https://example.com/covers/tomie.jpg"
+  },
+  {
+    "id": "goodnight-punpun",
+    "title": "Goodnight Punpun",
+    "author": "Inio Asano",
+    "genres": [
+      "Drama",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 147,
+    "description": "A coming-of-age story that follows a boy through pain, growth, and disillusionment.",
+    "cover_url": "https://example.com/covers/goodnight-punpun.jpg"
+  },
+  {
+    "id": "homunculus",
+    "title": "Homunculus",
+    "author": "Hideo Yamamoto",
+    "genres": [
+      "Mystery",
+      "Psychological",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 166,
+    "description": "An unsettling experiment awakens disturbing perceptions in a homeless man.",
+    "cover_url": "https://example.com/covers/homunculus.jpg"
+  },
+  {
+    "id": "blame",
+    "title": "Blame!",
+    "author": "Tsutomu Nihei",
+    "genres": [
+      "Action",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 65,
+    "description": "A silent cyberpunk journey through an endless megastructure.",
+    "cover_url": "https://example.com/covers/blame.jpg"
+  },
+  {
+    "id": "a-bout",
+    "title": "A-Bout!",
+    "author": "Kouhei Miyoshi",
+    "genres": [
+      "Action",
+      "Comedy",
+      "Delinquent",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 116,
+    "description": "A school delinquent comedy filled with absurd fights and rivalries.",
+    "cover_url": "https://example.com/covers/a-bout.jpg"
+  },
+  {
+    "id": "kaguya-sama",
+    "title": "Kaguya-sama: Love Is War",
+    "author": "Aka Akasaka",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 281,
+    "description": "Two genius students wage a battle of pride to make the other confess first.",
+    "cover_url": "https://example.com/covers/kaguya-sama.jpg"
+  },
+  {
+    "id": "march-comes-in-like-a-lion",
+    "title": "March Comes in Like a Lion",
+    "author": "Chica Umino",
+    "genres": [
+      "Drama",
+      "Slice of Life",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 200,
+    "description": "A young shogi prodigy searches for connection and healing.",
+    "cover_url": "https://example.com/covers/march-comes-in-like-a-lion.jpg"
+  },
+  {
+    "id": "space-brothers",
+    "title": "Space Brothers",
+    "author": "Chuuya Koyama",
+    "genres": [
+      "Drama",
+      "Sci-Fi",
+      "Seinen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 450,
+    "description": "Two brothers chase their dream of becoming astronauts.",
+    "cover_url": "https://example.com/covers/space-brothers.jpg"
+  },
+  {
+    "id": "xxxholic",
+    "title": "xxxHolic",
+    "author": "Clamp",
+    "genres": [
+      "Comedy",
+      "Mystery",
+      "Supernatural",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 213,
+    "description": "A boy encounters a mysterious shopkeeper who grants wishes at a price.",
+    "cover_url": "https://example.com/covers/xxxholic.jpg"
+  },
+  {
+    "id": "shamo",
+    "title": "Shamo",
+    "author": "Izo Hashimoto",
+    "genres": [
+      "Action",
+      "Drama",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 272,
+    "description": "A brutal redemption story about survival, violence, and martial arts.",
+    "cover_url": "https://example.com/covers/shamo.jpg"
+  },
+  {
+    "id": "battle-royale",
+    "title": "Battle Royale",
+    "author": "Koushun Takami",
+    "genres": [
+      "Action",
+      "Horror",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 119,
+    "description": "Students are forced into a lethal survival game.",
+    "cover_url": "https://example.com/covers/battle-royale.jpg"
+  },
+  {
+    "id": "apothecary-diaries",
+    "title": "The Apothecary Diaries",
+    "author": "Natsu Hyuuga",
+    "genres": [
+      "Drama",
+      "Mystery",
+      "Historical"
+    ],
+    "status": "ongoing",
+    "total_chapters": 70,
+    "description": "A clever apothecary solves intrigues inside an imperial court.",
+    "cover_url": "https://example.com/covers/apothecary-diaries.jpg"
+  },
+  {
+    "id": "yotsuba",
+    "title": "Yotsuba&!",
+    "author": "Kiyohiko Azuma",
+    "genres": [
+      "Comedy",
+      "Slice of Life"
+    ],
+    "status": "ongoing",
+    "total_chapters": 150,
+    "description": "A curious little girl explores everyday life with joyful wonder.",
+    "cover_url": "https://example.com/covers/yotsuba.jpg"
+  },
+  {
+    "id": "komi-cant-communicate",
+    "title": "Komi Can't Communicate",
+    "author": "Tomohito Oda",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "School",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 500,
+    "description": "A shy girl with communication anxiety tries to make 100 friends.",
+    "cover_url": "https://example.com/covers/komi-cant-communicate.jpg"
+  },
+  {
+    "id": "horimiya",
+    "title": "Horimiya",
+    "author": "HERO",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "School",
+      "Shounen"
+    ],
+    "status": "completed",
+    "total_chapters": 122,
+    "description": "Two classmates reveal hidden sides of themselves and grow closer.",
+    "cover_url": "https://example.com/covers/horimiya.jpg"
+  },
+  {
+    "id": "wotakoi",
+    "title": "Wotakoi: Love is Hard for Otaku",
+    "author": "Fujita",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Slice of Life",
+      "Josei"
+    ],
+    "status": "completed",
+    "total_chapters": 60,
+    "description": "Adults navigate relationships while embracing their otaku hobbies.",
+    "cover_url": "https://example.com/covers/wotakoi.jpg"
+  },
+  {
+    "id": "nana",
+    "title": "NANA",
+    "author": "Ai Yazawa",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Slice of Life",
+      "Josei"
+    ],
+    "status": "hiatus",
+    "total_chapters": 84,
+    "description": "Two women named Nana share an apartment while chasing love and dreams.",
+    "cover_url": "https://example.com/covers/nana.jpg"
+  },
+  {
+    "id": "fruits-basket",
+    "title": "Fruits Basket",
+    "author": "Natsuki Takaya",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 136,
+    "description": "A girl becomes entangled with a family cursed to transform into zodiac animals.",
+    "cover_url": "https://example.com/covers/fruits-basket.jpg"
+  },
+  {
+    "id": "sailor-moon",
+    "title": "Sailor Moon",
+    "author": "Naoko Takeuchi",
+    "genres": [
+      "Action",
+      "Magic",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 52,
+    "description": "A girl becomes a magical guardian and protects the Earth.",
+    "cover_url": "https://example.com/covers/sailor-moon.jpg"
+  },
+  {
+    "id": "cardcaptor-sakura",
+    "title": "Cardcaptor Sakura",
+    "author": "Clamp",
+    "genres": [
+      "Adventure",
+      "Magic",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 70,
+    "description": "A young girl captures magical cards while navigating friendship and love.",
+    "cover_url": "https://example.com/covers/cardcaptor-sakura.jpg"
+  },
+  {
+    "id": "ao-haru-ride",
+    "title": "Ao Haru Ride",
+    "author": "Io Sakisaka",
+    "genres": [
+      "Romance",
+      "School",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 53,
+    "description": "A girl reconnects with her first love and revisits youthful emotions.",
+    "cover_url": "https://example.com/covers/ao-haru-ride.jpg"
+  },
+  {
+    "id": "kimi-ni-todoke",
+    "title": "Kimi ni Todoke",
+    "author": "Karuho Shiina",
+    "genres": [
+      "Romance",
+      "School",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 123,
+    "description": "A misunderstood girl slowly opens up through friendship and romance.",
+    "cover_url": "https://example.com/covers/kimi-ni-todoke.jpg"
+  },
+  {
+    "id": "orange",
+    "title": "Orange",
+    "author": "Ichigo Takano",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Sci-Fi",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 22,
+    "description": "A letter from the future urges a girl to save a classmate.",
+    "cover_url": "https://example.com/covers/orange.jpg"
+  },
+  {
+    "id": "skip-beat",
+    "title": "Skip Beat!",
+    "author": "Yoshiki Nakamura",
+    "genres": [
+      "Comedy",
+      "Drama",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "ongoing",
+    "total_chapters": 330,
+    "description": "A girl enters show business to get revenge and discover herself.",
+    "cover_url": "https://example.com/covers/skip-beat.jpg"
+  },
+  {
+    "id": "yona-of-the-dawn",
+    "title": "Yona of the Dawn",
+    "author": "Mizuho Kusanagi",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy",
+      "Shoujo"
+    ],
+    "status": "ongoing",
+    "total_chapters": 250,
+    "description": "A princess flees her kingdom and begins a journey to reclaim her destiny.",
+    "cover_url": "https://example.com/covers/yona-of-the-dawn.jpg"
+  },
+  {
+    "id": "ouran-high-school-host-club",
+    "title": "Ouran High School Host Club",
+    "author": "Bisco Hatori",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 83,
+    "description": "A scholarship student joins a club of elite boys and chaos follows.",
+    "cover_url": "https://example.com/covers/ouran-high-school-host-club.jpg"
+  },
+  {
+    "id": "snow-white-with-the-red-hair",
+    "title": "Snow White with the Red Hair",
+    "author": "Sorata Akiduki",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "ongoing",
+    "total_chapters": 130,
+    "description": "A herbalist and prince build a relationship across court politics.",
+    "cover_url": "https://example.com/covers/snow-white-with-the-red-hair.jpg"
+  },
+  {
+    "id": "maid-sama",
+    "title": "Maid Sama!",
+    "author": "Hiro Fujiwara",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 85,
+    "description": "A strict student council president secretly works at a maid café.",
+    "cover_url": "https://example.com/covers/maid-sama.jpg"
+  },
+  {
+    "id": "kamisama-kiss",
+    "title": "Kamisama Kiss",
+    "author": "Julietta Suzuki",
+    "genres": [
+      "Comedy",
+      "Fantasy",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 149,
+    "description": "A girl becomes a land god and meets a fox familiar.",
+    "cover_url": "https://example.com/covers/kamisama-kiss.jpg"
+  },
+  {
+    "id": "black-butler",
+    "title": "Black Butler",
+    "author": "Yana Toboso",
+    "genres": [
+      "Action",
+      "Mystery",
+      "Supernatural",
+      "Shounen"
+    ],
+    "status": "ongoing",
+    "total_chapters": 215,
+    "description": "A noble boy and his demon butler solve dark mysteries in Victorian England.",
+    "cover_url": "https://example.com/covers/black-butler.jpg"
+  },
+  {
+    "id": "given",
+    "title": "Given",
+    "author": "Natsuki Kizu",
+    "genres": [
+      "Drama",
+      "Music",
+      "Romance",
+      "Josei"
+    ],
+    "status": "ongoing",
+    "total_chapters": 48,
+    "description": "Music helps a group of young men face grief and love.",
+    "cover_url": "https://example.com/covers/given.jpg"
+  },
+  {
+    "id": "chihayafuru",
+    "title": "Chihayafuru",
+    "author": "Yuki Suetsugu",
+    "genres": [
+      "Drama",
+      "Romance",
+      "Sports",
+      "Josei"
+    ],
+    "status": "completed",
+    "total_chapters": 248,
+    "description": "A passionate karuta player chases national glory and personal growth.",
+    "cover_url": "https://example.com/covers/chihayafuru.jpg"
+  },
+  {
+    "id": "children-of-the-sea",
+    "title": "Children of the Sea",
+    "author": "Daisuke Igarashi",
+    "genres": [
+      "Adventure",
+      "Drama",
+      "Fantasy",
+      "Seinen"
+    ],
+    "status": "completed",
+    "total_chapters": 45,
+    "description": "A girl becomes involved in a mysterious oceanic phenomenon.",
+    "cover_url": "https://example.com/covers/children-of-the-sea.jpg"
+  },
+  {
+    "id": "a-sign-of-affection",
+    "title": "A Sign of Affection",
+    "author": "Suu Morishita",
+    "genres": [
+      "Romance",
+      "Slice of Life",
+      "Shoujo"
+    ],
+    "status": "ongoing",
+    "total_chapters": 40,
+    "description": "A college student explores communication and first love in a gentle romance.",
+    "cover_url": "https://example.com/covers/a-sign-of-affection.jpg"
+  },
+  {
+    "id": "my-love-story",
+    "title": "My Love Story!!",
+    "author": "Kazoe Ino",
+    "genres": [
+      "Comedy",
+      "Romance",
+      "Shoujo"
+    ],
+    "status": "completed",
+    "total_chapters": 13,
+    "description": "A big-hearted boy finds unexpected romance in a charming comedy.",
+    "cover_url": "https://example.com/covers/my-love-story.jpg"
+  }
+]
