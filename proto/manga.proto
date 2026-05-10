@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package mangahub;
+
+option go_package = "github.com/plbth/mangahub/proto";
+
+// Get a manga by its unique ID.
+message GetMangaRequest {
+  string id = 1;
+}
+
+// Manga response payload.
+message MangaResponse {
+  string id = 1;
+  string title = 2;
+  string author = 3;
+  repeated string genres = 4;
+  string status = 5;
+  int32 total_chapters = 6;
+  string description = 7;
+  string cover_url = 8;
+}
+
+// Search request with optional genre filter.
+message SearchRequest {
+  string query = 1;
+  string genre = 2;
+}
+
+// Search results payload.
+message SearchResponse {
+  repeated MangaResponse results = 1;
+}
+
+// Progress update request.
+message UpdateProgressRequest {
+  string user_id = 1;
+  string manga_id = 2;
+  int32 chapter = 3;
+  int32 volume = 4;
+  string status = 5;
+  int32 rating = 6;
+}
+
+// Progress update response.
+message ProgressResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Manga service used by internal components.
+service MangaService {
+  rpc GetManga(GetMangaRequest) returns (MangaResponse);
+  rpc SearchManga(SearchRequest) returns (SearchResponse);
+  rpc UpdateProgress(UpdateProgressRequest) returns (ProgressResponse);
+}
