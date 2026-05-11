@@ -89,7 +89,7 @@ func (s *Server) buildRouter() *gin.Engine {
 	r.Use(gin.Logger(), gin.Recovery(), corsMiddleware())
 
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
+		c.IndentedJSON(http.StatusOK, gin.H{
 			"status":    "ok",
 			"service":   "mangahub-http",
 			"timestamp": time.Now().UTC(),
@@ -153,13 +153,13 @@ type UpdateProgressRequest struct {
 func (s *Server) handleRegister(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	hashed, err := hashPassword(req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
 		return
 	}
 
@@ -171,20 +171,20 @@ func (s *Server) handleRegister(c *gin.Context) {
 
 	if err := s.repo.CreateUser(user); err != nil {
 		if strings.Contains(strings.ToLower(err.Error()), "already exists") {
-			c.JSON(http.StatusConflict, gin.H{"error": "username or email already exists"})
+			c.IndentedJSON(http.StatusConflict, gin.H{"error": "username or email already exists"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to create user"})
 		return
 	}
 
 	token, err := s.generateToken(user.ID, user.Username)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, models.AuthResponse{
+	c.IndentedJSON(http.StatusCreated, models.AuthResponse{
 		Token: token,
 		User:  *sanitizeUser(user),
 	})
@@ -193,37 +193,37 @@ func (s *Server) handleRegister(c *gin.Context) {
 func (s *Server) handleLogin(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if req.Username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "username is required"})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "username is required"})
 		return
 	}
 
 	user, err := s.repo.GetUserByUsername(req.Username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "account not found"})
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "account not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
 		return
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)) != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}
 
 	token, err := s.generateToken(user.ID, user.Username)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
 
-	c.JSON(http.StatusOK, models.AuthResponse{
+	c.IndentedJSON(http.StatusOK, models.AuthResponse{
 		Token: token,
 		User:  *sanitizeUser(user),
 	})
@@ -253,7 +253,7 @@ func (s *Server) handleListManga(c *gin.Context) {
 
 	results, err := s.searchManga(ctx, query, genre)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to search manga"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to search manga"})
 		return
 	}
 
@@ -280,7 +280,7 @@ func (s *Server) handleListManga(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"count":  len(results),
 		"manga":  results,
 		"query":  query,
@@ -296,14 +296,14 @@ func (s *Server) handleGetManga(c *gin.Context) {
 	resp, err := s.grpcClient.GetManga(ctx, &proto.GetMangaRequest{Id: c.Param("id")})
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch manga"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch manga"})
 		return
 	}
 
-	c.JSON(http.StatusOK, mangaFromProto(resp))
+	c.IndentedJSON(http.StatusOK, mangaFromProto(resp))
 }
 
 func (s *Server) handleAddToLibrary(c *gin.Context) {
@@ -312,23 +312,23 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 
 	userIDStr, ok := userID.(string)
 	if !ok || userIDStr == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
 		return
 	}
 
 	var req AddLibraryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	manga, err := s.repo.GetManga(req.MangaID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
 		return
 	}
 
@@ -344,7 +344,7 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 	}
 
 	if err := s.repo.UpdateProgress(&progress); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update library"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to update library"})
 		return
 	}
 
@@ -353,7 +353,7 @@ func (s *Server) handleAddToLibrary(c *gin.Context) {
 		usernameStr = userIDStr
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
+	c.IndentedJSON(http.StatusCreated, gin.H{
 		"message":  "added to library",
 		"user":     usernameStr,
 		"manga":    manga.Title,
@@ -365,7 +365,7 @@ func (s *Server) handleGetLibrary(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	userIDStr, ok := userID.(string)
 	if !ok || userIDStr == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
 		return
 	}
 
@@ -373,7 +373,7 @@ func (s *Server) handleGetLibrary(c *gin.Context) {
 
 	library, err := s.repo.GetUserLibrary(userIDStr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch library"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch library"})
 		return
 	}
 
@@ -387,7 +387,7 @@ func (s *Server) handleGetLibrary(c *gin.Context) {
 		library = filtered
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"count":   len(library),
 		"library": library,
 	})
@@ -397,28 +397,28 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	userIDStr, ok := userID.(string)
 	if !ok || userIDStr == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "not authenticated"})
 		return
 	}
 
 	var req UpdateProgressRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	manga, err := s.repo.GetManga(req.MangaID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "manga not found"})
+			c.IndentedJSON(http.StatusNotFound, gin.H{"error": "manga not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to load manga"})
 		return
 	}
 
 	if manga.TotalChapters > 0 && req.Chapter > manga.TotalChapters {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": fmt.Sprintf("chapter %d exceeds manga's total chapters (%d)", req.Chapter, manga.TotalChapters),
 		})
 		return
@@ -436,11 +436,11 @@ func (s *Server) handleUpdateProgress(c *gin.Context) {
 	}
 
 	if err := s.repo.UpdateProgress(&progress); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update progress"})
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to update progress"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"message":  "progress updated successfully",
 		"manga":    manga.Title,
 		"progress": progress,
@@ -541,18 +541,29 @@ func (s *Server) generateToken(userID, username string) (string, error) {
 func (s *Server) authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
-		if header == "" {
+		tokenStr := ""
+		if header != "" {
+			parts := strings.SplitN(header, " ", 2)
+			if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization format"})
+				return
+			}
+			tokenStr = parts[1]
+		} else if c.Request.URL.Path == "/ws" {
+			tokenStr = c.Query("token")
+			if tokenStr == "" {
+				tokenStr = c.Query("access_token")
+			}
+			if tokenStr == "" {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization token required"})
+				return
+			}
+		} else {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization header required"})
 			return
 		}
 
-		parts := strings.SplitN(header, " ", 2)
-		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization format"})
-			return
-		}
-
-		token, err := jwt.Parse(parts[1], func(token *jwt.Token) (any, error) {
+		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}

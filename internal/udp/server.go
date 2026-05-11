@@ -24,6 +24,9 @@ type Server struct {
 	clients map[string]*net.UDPAddr
 	conn    *net.UDPConn
 	logger  *log.Logger
+
+	closeOnce sync.Once
+	closeErr  error
 }
 
 // NewServer creates a UDP server bound to the provided address.
@@ -32,7 +35,7 @@ func NewServer(addr string) *Server {
 	return &Server{
 		Addr:    addr,
 		clients: make(map[string]*net.UDPAddr),
-		logger:   log.Default(),
+		logger:  log.Default(),
 	}
 }
 
@@ -80,10 +83,16 @@ func (s *Server) Start(ctx context.Context) error {
 
 // Close closes the UDP socket.
 func (s *Server) Close() error {
-	if s.conn == nil {
-		return nil
-	}
-	return s.conn.Close()
+	s.closeOnce.Do(func() {
+		if s.conn == nil {
+			return
+		}
+		s.closeErr = s.conn.Close()
+		if errors.Is(s.closeErr, net.ErrClosed) {
+			s.closeErr = nil
+		}
+	})
+	return s.closeErr
 }
 
 // ClientCount returns the number of registered clients.

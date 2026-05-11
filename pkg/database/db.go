@@ -6,13 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	sqlite3 "github.com/mattn/go-sqlite3"
 	"github.com/plbth/mangahub/pkg/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // DB Repository Interface
@@ -103,23 +103,55 @@ func NewSQLiteRepository(db *sql.DB) Repository {
 	return &SQLiteDB{db: db}
 }
 
+// SeedMangaFromJSON loads manga data when the manga table is empty.
+func SeedMangaFromJSON(db *sql.DB, repo Repository, path string) (int, error) {
+	if db == nil {
+		return 0, fmt.Errorf("seed manga: db is nil")
+	}
+	if repo == nil {
+		return 0, fmt.Errorf("seed manga: repo is nil")
+	}
+
+	var count int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM manga;`).Scan(&count); err != nil {
+		return 0, fmt.Errorf("seed manga: count failed: %w", err)
+	}
+	if count > 0 {
+		return 0, nil
+	}
+
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return 0, fmt.Errorf("seed manga: read %s failed: %w", path, err)
+	}
+
+	var items []models.Manga
+	if err := json.Unmarshal(raw, &items); err != nil {
+		return 0, fmt.Errorf("seed manga: parse %s failed: %w", path, err)
+	}
+
+	inserted := 0
+	for _, item := range items {
+		manga := item
+		if err := repo.AddManga(&manga); err != nil {
+			return inserted, fmt.Errorf("seed manga: insert %s failed: %w", manga.ID, err)
+		}
+		inserted++
+	}
+
+	return inserted, nil
+}
+
 // Example dummy implementation to satisfy the interface for now
 func (s *SQLiteDB) CreateUser(user *models.User) error {
 	if user == nil {
 		return fmt.Errorf("failed to create user: user is nil")
 	}
 
-	hashed, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash), 12)
-	if err != nil {
-		log.Printf("[DATABASE] failed to hash password: %v", err)
-		return fmt.Errorf("failed to create user: could not hash password")
-	}
-
 	user.ID = uuid.NewString()
-	user.PasswordHash = string(hashed)
 	user.CreatedAt = time.Now().UTC()
 
-	_, err = s.db.Exec(
+	_, err := s.db.Exec(
 		`INSERT INTO users (id, username, email, password_hash, created_at)
 		 VALUES (?, ?, ?, ?, ?);`,
 		user.ID,

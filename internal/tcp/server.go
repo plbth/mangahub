@@ -22,8 +22,8 @@ type broadcastJob struct {
 // TCPServer manages a pool of TCP connections and fans out ProgressUpdate
 // payloads to every connected client except the one that sent them.
 type TCPServer struct {
-	port      int
-	listener  net.Listener
+	port     int
+	listener net.Listener
 
 	// Connection pool – keyed by remote address string.
 	mu    sync.RWMutex
@@ -74,12 +74,14 @@ func (s *TCPServer) Start() error {
 // Accept), signals internal goroutines, closes every open connection, and
 // waits for all goroutines to exit.
 func (s *TCPServer) Shutdown(ctx context.Context) error {
+	// Signal goroutines first so listener/connection close errors are treated
+	// as expected shutdown noise.
+	close(s.quit)
+
 	// Signal the accept-loop to stop by closing the listener.
 	if s.listener != nil {
 		s.listener.Close()
 	}
-	// Signal the broadcaster to drain and exit.
-	close(s.quit)
 
 	// Close every connected client so their read-loops unblock.
 	s.mu.Lock()

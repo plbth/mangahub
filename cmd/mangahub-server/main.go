@@ -41,6 +41,12 @@ func main() {
     }()
 
     repo := database.NewSQLiteRepository(db)
+    seeded, err := database.SeedMangaFromJSON(db, repo, "data/manga.json")
+    if err != nil {
+        log.Printf("[ORCHESTRATOR] Manga seed skipped: %v", err)
+    } else if seeded > 0 {
+        log.Printf("[ORCHESTRATOR] Seeded %d manga entries", seeded)
+    }
 
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
@@ -74,7 +80,7 @@ func main() {
 
     // Start WebSocket hub.
     hub := websocket.NewChatHub()
-    log.Println("[ORCHESTRATOR] Starting WebSocket hub (served via HTTP on :9093)")
+    log.Println("[ORCHESTRATOR] Starting WebSocket hub (served via HTTP on :8080)")
     wg.Add(1)
     go func() {
         defer wg.Done()

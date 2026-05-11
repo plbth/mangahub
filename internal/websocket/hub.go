@@ -112,7 +112,7 @@ func (h *ChatHub) closeAllClients() {
 	}
 }
 
-// fanOut delivers msg to every client in the target room except the sender.
+// fanOut delivers msg to every client in the target room, including the sender.
 // Dead clients (send channel full) are evicted immediately.
 func (h *ChatHub) fanOut(msg *models.ChatMessage) {
 	roomKey := msg.MangaID // "" → general chat
@@ -122,6 +122,9 @@ func (h *ChatHub) fanOut(msg *models.ChatMessage) {
 		return // nobody in this room
 	}
 
+	log.Printf("[WS] Message from %s (%s) in room %q: %s",
+		msg.UserID, msg.Username, roomLabel(roomKey), msg.Message)
+
 	payload := marshalMessage(msg)
 	if payload == nil {
 		return
@@ -129,11 +132,6 @@ func (h *ChatHub) fanOut(msg *models.ChatMessage) {
 
 	var evict []*Client
 	for client := range r {
-		// Do not echo back to the sender.
-		if client.userID == msg.UserID {
-			continue
-		}
-
 		select {
 		case client.send <- payload:
 			// delivered to writePump buffer

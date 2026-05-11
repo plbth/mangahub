@@ -217,26 +217,6 @@ func (c *Client) writePump() {
 				return
 			}
 
-			// Coalesce any messages that arrived while we held the writer.
-			// This batches buffered payloads into a single WebSocket frame,
-			// reducing syscall overhead under burst load.
-		coalesce:
-			for {
-				select {
-				case next, ok := <-c.send:
-					if !ok {
-						break coalesce
-					}
-					if _, err = w.Write(next); err != nil {
-						log.Printf("[WS] Write error (coalesce) for %s: %v", c.userID, err)
-						_ = w.Close()
-						return
-					}
-				default:
-					break coalesce
-				}
-			}
-
 			if err = w.Close(); err != nil {
 				log.Printf("[WS] Writer close error for %s: %v", c.userID, err)
 				return

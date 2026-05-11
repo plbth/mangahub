@@ -28,6 +28,8 @@ func init() {
 	rootCmd.AddCommand(newMangaCmd())
 	rootCmd.AddCommand(newLibraryCmd())
 	rootCmd.AddCommand(newProgressCmd())
+	rootCmd.AddCommand(newSyncCmd())
+	rootCmd.AddCommand(newNotifyCmd())
 	rootCmd.AddCommand(newServerCmd())
 	rootCmd.AddCommand(newConfigCmd())
 }
