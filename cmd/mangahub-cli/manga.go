@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -23,6 +24,8 @@ func newMangaCmd() *cobra.Command {
 	cmd.AddCommand(newMangaSearchCmd())
 	cmd.AddCommand(newMangaInfoCmd())
 	cmd.AddCommand(newMangaListCmd())
+	cmd.AddCommand(newJikanSearchCmd())
+	cmd.AddCommand(newJikanImportCmd())
 	return cmd
 }
 
@@ -133,6 +136,86 @@ func newMangaListCmd() *cobra.Command {
 	cmd.Flags().StringVar(&status, "status", "", "status filter")
 	cmd.Flags().IntVar(&limit, "limit", 20, "page size")
 	cmd.Flags().IntVar(&page, "page", 1, "page number")
+	return cmd
+}
+
+type jikanResponse struct {
+	Source   string         `json:"source"`
+	Count    int            `json:"count"`
+	Manga    []models.Manga `json:"manga"`
+	Message  string         `json:"message"`
+	Imported bool           `json:"imported"`
+}
+
+func newJikanSearchCmd() *cobra.Command {
+	var title string
+	var limit int
+
+	cmd := &cobra.Command{
+		Use:   "jikan-search",
+		Short: "Search live MyAnimeList manga metadata through Jikan",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if strings.TrimSpace(title) == "" {
+				return fmt.Errorf("--title is required")
+			}
+
+			endpoint := "/manga/external/jikan/search?title=" + url.QueryEscape(title)
+			if limit > 0 {
+				endpoint += fmt.Sprintf("&limit=%d", limit)
+			}
+
+			client := newHTTPClient()
+			var resp jikanResponse
+			if err := client.request("GET", endpoint, nil, &resp, false); err != nil {
+				return err
+			}
+
+			fmt.Printf("Source: %s\n", resp.Source)
+			fmt.Printf("Found %d result(s)\n", resp.Count)
+			printMangaTable(resp.Manga)
+			return nil
+		},
+	}
+	cmd.Flags().StringVar(&title, "title", "", "MyAnimeList/Jikan title search")
+	cmd.Flags().IntVar(&limit, "limit", 5, "maximum results")
+	_ = cmd.MarkFlagRequired("title")
+	return cmd
+}
+
+func newJikanImportCmd() *cobra.Command {
+	var title string
+
+	cmd := &cobra.Command{
+		Use:   "jikan-import",
+		Short: "Import the best MyAnimeList/Jikan title match into SQLite",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if strings.TrimSpace(title) == "" {
+				return fmt.Errorf("--title is required")
+			}
+
+			client := newHTTPClient()
+			var resp struct {
+				Message  string       `json:"message"`
+				Imported bool         `json:"imported"`
+				Source   string       `json:"source"`
+				Manga    models.Manga `json:"manga"`
+			}
+			if err := client.request("POST", "/manga/external/jikan/import", map[string]any{
+				"title": title,
+				"limit": 1,
+			}, &resp, false); err != nil {
+				return err
+			}
+
+			fmt.Println(resp.Message)
+			fmt.Printf("Imported: %t\n", resp.Imported)
+			fmt.Printf("Source: %s\n", resp.Source)
+			printMangaDetail(resp.Manga)
+			return nil
+		},
+	}
+	cmd.Flags().StringVar(&title, "title", "", "MyAnimeList/Jikan title search to import")
+	_ = cmd.MarkFlagRequired("title")
 	return cmd
 }
 

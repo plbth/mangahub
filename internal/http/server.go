@@ -15,6 +15,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/plbth/mangahub/internal/external/jikan"
 	"github.com/plbth/mangahub/internal/websocket"
 	"github.com/plbth/mangahub/pkg/database"
 	"github.com/plbth/mangahub/pkg/models"
@@ -35,6 +36,7 @@ type Server struct {
 	repo       database.Repository
 	hub        *websocket.ChatHub
 	grpcClient proto.MangaServiceClient
+	jikan      *jikan.Client
 	jwtSecret  []byte
 	httpServer *http.Server
 }
@@ -57,6 +59,7 @@ func NewServer(cfg Config, repo database.Repository, hub *websocket.ChatHub, grp
 		repo:       repo,
 		hub:        hub,
 		grpcClient: proto.NewMangaServiceClient(grpcConn),
+		jikan:      jikan.NewClient(),
 		jwtSecret:  []byte(cfg.JWTSecret),
 	}
 	s.router = s.buildRouter()
@@ -107,6 +110,8 @@ func (s *Server) buildRouter() *gin.Engine {
 	manga := r.Group("/manga")
 	{
 		manga.GET("", s.handleListManga)
+		manga.GET("/external/jikan/search", s.handleJikanSearch)
+		manga.POST("/external/jikan/import", s.handleJikanImport)
 		manga.GET("/:id", s.handleGetManga)
 	}
 
@@ -148,6 +153,11 @@ type UpdateProgressRequest struct {
 	Volume  int    `json:"volume"`
 	Rating  int    `json:"rating"`
 	Notes   string `json:"notes"`
+}
+
+type JikanImportRequest struct {
+	Title string `json:"title" binding:"required"`
+	Limit int    `json:"limit"`
 }
 
 func (s *Server) handleRegister(c *gin.Context) {
@@ -304,6 +314,88 @@ func (s *Server) handleGetManga(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, mangaFromProto(resp))
+}
+
+func (s *Server) handleJikanSearch(c *gin.Context) {
+	title := strings.TrimSpace(c.Query("title"))
+	if title == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+		return
+	}
+
+	limit := 5
+	if raw := c.Query("limit"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+			limit = n
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+	defer cancel()
+
+	results, err := s.jikan.SearchManga(ctx, title, limit)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"source": "Jikan / MyAnimeList",
+		"count":  len(results),
+		"manga":  results,
+	})
+}
+
+func (s *Server) handleJikanImport(c *gin.Context) {
+	var req JikanImportRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	limit := req.Limit
+	if limit <= 0 {
+		limit = 1
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+	defer cancel()
+
+	results, err := s.jikan.SearchManga(ctx, req.Title, limit)
+	if err != nil {
+		c.IndentedJSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+	if len(results) == 0 {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "no Jikan results found"})
+		return
+	}
+
+	manga := results[0]
+	if existing, err := s.repo.GetManga(manga.ID); err == nil {
+		c.IndentedJSON(http.StatusOK, gin.H{
+			"message":  "manga already imported",
+			"imported": false,
+			"source":   "Jikan / MyAnimeList",
+			"manga":    existing,
+		})
+		return
+	} else if !errors.Is(err, sql.ErrNoRows) {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to check imported manga"})
+		return
+	}
+
+	if err := s.repo.AddManga(&manga); err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to import manga"})
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, gin.H{
+		"message":  "manga imported from Jikan / MyAnimeList",
+		"imported": true,
+		"source":   "Jikan / MyAnimeList",
+		"manga":    manga,
+	})
 }
 
 func (s *Server) handleAddToLibrary(c *gin.Context) {
