@@ -30,6 +30,7 @@ func init() {
 	rootCmd.AddCommand(newProgressCmd())
 	rootCmd.AddCommand(newSyncCmd())
 	rootCmd.AddCommand(newNotifyCmd())
+	rootCmd.AddCommand(newChatCmd())
 	rootCmd.AddCommand(newServerCmd())
 	rootCmd.AddCommand(newConfigCmd())
 }
@@ -38,7 +39,7 @@ func initConfig() {
 	if cfgFile == "" {
 		cfgFile = defaultConfigPath()
 	}
-	loaded, err := loadConfig(cfgFile)
+	loaded, err := LoadConfig()
 	if err == nil {
 		cfg = loaded
 	}
@@ -50,9 +51,9 @@ func initConfig() {
 func defaultConfigPath() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return ".mangahub-cli.json"
+		return filepath.Join(".mangahub", "config.json")
 	}
-	return filepath.Join(home, ".mangahub", "cli.json")
+	return filepath.Join(home, ".mangahub", "config.json")
 }
 
 func fatalf(format string, args ...any) {

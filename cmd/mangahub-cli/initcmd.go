@@ -11,7 +11,7 @@ func newInitCmd() *cobra.Command {
 		Use:   "init",
 		Short: "Create or reset CLI configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := saveConfig(cfgFile, cfg.clone()); err != nil {
+			if err := saveConfigFile(cfgFile, cfg.clone()); err != nil {
 				return err
 			}
 			fmt.Printf("Configuration saved to %s\n", cfgFile)

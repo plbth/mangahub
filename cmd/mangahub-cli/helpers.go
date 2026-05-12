@@ -11,15 +11,14 @@ import (
 )
 
 func saveToken(token string) error {
-	cfgCopy := cfg.clone()
-	cfgCopy.Token = strings.TrimSpace(token)
-	return saveConfig(cfgFile, cfgCopy)
+	return SaveConfig(token)
 }
 
 func clearToken() error {
 	cfgCopy := cfg.clone()
 	cfgCopy.Token = ""
-	return saveConfig(cfgFile, cfgCopy)
+	cfg = cfgCopy
+	return saveConfigFile(cfgFile, cfgCopy)
 }
 
 func showUser(user models.User) {

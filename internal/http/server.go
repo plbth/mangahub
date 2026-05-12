@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/plbth/mangahub/internal/external/jikan"
@@ -647,7 +648,23 @@ func (s *Server) authMiddleware() gin.HandlerFunc {
 				tokenStr = c.Query("access_token")
 			}
 			if tokenStr == "" {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization token required"})
+				username := strings.TrimSpace(c.Query("guest"))
+				if username == "" {
+					username = strings.TrimSpace(c.Query("username"))
+				}
+				if username == "" {
+					username = "guest"
+				}
+
+				userID := "guest-" + uuid.NewString()
+				c.Set("userID", userID)
+				c.Set("username", username)
+
+				ctx := context.WithValue(c.Request.Context(), "userID", userID)
+				ctx = context.WithValue(ctx, "username", username)
+				c.Request = c.Request.WithContext(ctx)
+
+				c.Next()
 				return
 			}
 		} else {

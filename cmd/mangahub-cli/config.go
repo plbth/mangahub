@@ -17,7 +17,32 @@ func newAppConfig() *AppConfig {
 	return &AppConfig{APIBaseURL: "http://localhost:8080"}
 }
 
-func loadConfig(path string) (*AppConfig, error) {
+func LoadConfig() (*AppConfig, error) {
+	if cfgFile == "" {
+		cfgFile = defaultConfigPath()
+	}
+	return loadConfigFile(cfgFile)
+}
+
+func SaveConfig(token string) error {
+	if cfgFile == "" {
+		cfgFile = defaultConfigPath()
+	}
+	cfgCopy := cfg.clone()
+	cfgCopy.Token = strings.TrimSpace(token)
+	cfg = cfgCopy
+	return saveConfigFile(cfgFile, cfgCopy)
+}
+
+func GetStoredToken() string {
+	loaded, err := LoadConfig()
+	if err == nil {
+		cfg = loaded
+	}
+	return strings.TrimSpace(cfg.Token)
+}
+
+func loadConfigFile(path string) (*AppConfig, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -32,7 +57,7 @@ func loadConfig(path string) (*AppConfig, error) {
 	return &cfg, nil
 }
 
-func saveConfig(path string, cfg *AppConfig) error {
+func saveConfigFile(path string, cfg *AppConfig) error {
 	if cfg == nil {
 		return errors.New("nil config")
 	}
