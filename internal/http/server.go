@@ -92,13 +92,7 @@ func (s *Server) buildRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery(), corsMiddleware())
 
-	r.GET("/health", func(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK, gin.H{
-			"status":    "ok",
-			"service":   "mangahub-http",
-			"timestamp": time.Now().UTC(),
-		})
-	})
+	r.GET("/health", s.handleHealth)
 
 	r.GET("/ws", s.authMiddleware(), s.handleWebSocket)
 
@@ -137,6 +131,16 @@ type LoginRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password" binding:"required"`
+}
+
+type HealthResponse struct {
+	Status    string    `json:"status"`
+	Service   string    `json:"service"`
+	Timestamp time.Time `json:"timestamp"`
+	Database  string    `json:"database"`
+	GRPC      string    `json:"grpc"`
+	WebSocket string    `json:"websocket"`
+	Details   string    `json:"details,omitempty"`
 }
 
 type AddLibraryRequest struct {
@@ -315,6 +319,45 @@ func (s *Server) handleGetManga(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, mangaFromProto(resp))
+}
+
+func (s *Server) handleHealth(c *gin.Context) {
+	resp := HealthResponse{
+		Service:   "mangahub-http",
+		Timestamp: time.Now().UTC(),
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
+	defer cancel()
+	if err := s.repo.Ping(ctx); err != nil {
+		resp.Database = "down"
+		resp.Status = "degraded"
+		resp.Details = err.Error()
+	} else {
+		resp.Database = "up"
+		resp.Status = "ok"
+	}
+
+	if s.grpcClient != nil {
+		resp.GRPC = "up"
+	} else {
+		resp.GRPC = "down"
+		resp.Status = "degraded"
+	}
+
+	if s.hub != nil {
+		resp.WebSocket = "up"
+	} else {
+		resp.WebSocket = "down"
+		resp.Status = "degraded"
+	}
+
+	statusCode := http.StatusOK
+	if resp.Status != "ok" {
+		statusCode = http.StatusServiceUnavailable
+	}
+
+	c.IndentedJSON(statusCode, resp)
 }
 
 func (s *Server) handleJikanSearch(c *gin.Context) {

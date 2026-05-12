@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -17,6 +18,9 @@ import (
 
 // DB Repository Interface
 type Repository interface {
+	// Health
+	Ping(ctx context.Context) error
+
 	// Auth
 	CreateUser(user *models.User) error
 	GetUserByUsername(username string) (*models.User, error)
@@ -457,4 +461,11 @@ func (s *SQLiteDB) GetUserLibrary(userID string) ([]models.LibraryView, error) {
 	}
 
 	return library, nil
+}
+
+func (s *SQLiteDB) Ping(ctx context.Context) error {
+	if s == nil || s.db == nil {
+		return fmt.Errorf("database ping: nil database")
+	}
+	return s.db.PingContext(ctx)
 }
